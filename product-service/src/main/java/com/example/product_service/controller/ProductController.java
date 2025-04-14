@@ -65,4 +65,18 @@ public class ProductController {
             return ResponseEntity.notFound().build();
         }
     }
+
+    @PatchMapping("/{id}/quantity")
+    public Product updateQuantity(@PathVariable Long id, @RequestParam int quantity) {
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Product not found"));
+        if (quantity < 0) {
+            throw new IllegalArgumentException("Quantity cannot be negative");
+        }
+        if (product.getQuantity() < quantity) {
+            throw new IllegalArgumentException("Not enough stock available");
+        }
+        product.setQuantity(product.getQuantity() - quantity);
+        return productRepository.save(product);
+    }
 }
