@@ -1,0 +1,5 @@
+com/example/product_service/repository/ProductRepository.class
+com/example/product_service/entity/Product.class
+com/example/product_service/controller/ProductController.class
+com/example/product_service/ProductServiceApplication.class
+com/example/product_service/exception/GlobalExceptionHandler.class

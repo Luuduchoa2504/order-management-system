@@ -1,0 +1,10 @@
+/Users/hoaluu/Documents/workspaces/java/order-management-system/order-service/src/main/java/com/example/orderservice/dto/OrderRequestDTO.java
+/Users/hoaluu/Documents/workspaces/java/order-management-system/order-service/src/main/java/com/example/orderservice/config/ProductServiceConfig.java
+/Users/hoaluu/Documents/workspaces/java/order-management-system/order-service/src/main/java/com/example/orderservice/dto/OrderResponseDTO.java
+/Users/hoaluu/Documents/workspaces/java/order-management-system/order-service/src/main/java/com/example/orderservice/repository/OrderRepository.java
+/Users/hoaluu/Documents/workspaces/java/order-management-system/order-service/src/main/java/com/example/orderservice/entity/Order.java
+/Users/hoaluu/Documents/workspaces/java/order-management-system/order-service/src/main/java/com/example/orderservice/dto/ProductDTO.java
+/Users/hoaluu/Documents/workspaces/java/order-management-system/order-service/src/main/java/com/example/orderservice/controller/OrderController.java
+/Users/hoaluu/Documents/workspaces/java/order-management-system/order-service/src/main/java/com/example/orderservice/exception/OrderServiceException.java
+/Users/hoaluu/Documents/workspaces/java/order-management-system/order-service/src/main/java/com/example/orderservice/OrderServiceApplication.java
+/Users/hoaluu/Documents/workspaces/java/order-management-system/order-service/src/main/java/com/example/orderservice/exception/GlobalExceptionHandler.java
