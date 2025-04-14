@@ -7,31 +7,35 @@ import com.example.orderservice.dto.ProductDTO;
 import com.example.orderservice.entity.Order;
 import com.example.orderservice.repository.OrderRepository;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/orders")
 public class OrderController {
 
-    @Autowired
-    private OrderRepository orderRepository;
+    private final OrderRepository orderRepository;
+    private final RestTemplate restTemplate;
+    private final ProductServiceConfig productServiceConfig;
 
-    @Autowired
-    private RestTemplate restTemplate;
-
-    @Autowired
-    private ProductServiceConfig productServiceConfig;
+    public OrderController(OrderRepository orderRepository, RestTemplate restTemplate, ProductServiceConfig productServiceConfig) {
+        this.orderRepository = orderRepository;
+        this.restTemplate = restTemplate;
+        this.productServiceConfig = productServiceConfig;
+    }
 
     @PostMapping
-    public ResponseEntity<OrderResponseDTO> createOrder(
+    public ResponseEntity<?> createOrder(
             @Valid @RequestBody OrderRequestDTO orderRequest) {
-        // Call Product Service to get product details
         String baseUrl = productServiceConfig.getUrl();
-        // Ensure the base URL ends with a slash
         if (!baseUrl.endsWith("/")) {
             baseUrl += "/";
         }
@@ -40,33 +44,31 @@ public class OrderController {
         try {
             productResponse = restTemplate.getForEntity(productServiceUrl, ProductDTO.class);
         } catch (RestClientException e) {
-            System.err.println("Failed to connect to Product Service: " + e.getMessage());
-            return ResponseEntity.status(503).body(null);
+            throw new ResourceAccessException("Failed to connect to Product Service: " + e.getMessage());
         }
 
-        // Check if product exists
         if (!productResponse.getStatusCode().is2xxSuccessful() || productResponse.getBody() == null) {
-            return ResponseEntity.notFound().build();
+            throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "Product not found with ID: " + orderRequest.getProductId());
         }
 
         ProductDTO product = productResponse.getBody();
 
-        // Validate quantity
         if (product.getQuantity() < orderRequest.getQuantity()) {
-            return ResponseEntity.badRequest().build();
+            Map<String, Object> error = new HashMap<>();
+            error.put("status", HttpStatus.BAD_REQUEST.value());
+            error.put("error", "Bad Request");
+            error.put("message", "Insufficient quantity. Available: " + product.getQuantity() + ", Requested: " + orderRequest.getQuantity());
+            return ResponseEntity.status(400).body(error);
         }
 
-        // Calculate total price
         double totalPrice = product.getPrice() * orderRequest.getQuantity();
 
-        // Create and save the order
         Order order = new Order();
         order.setProductId(orderRequest.getProductId());
         order.setQuantity(orderRequest.getQuantity());
         order.setTotalPrice(totalPrice);
         Order savedOrder = orderRepository.save(order);
 
-        // Prepare response
         OrderResponseDTO response = new OrderResponseDTO();
         response.setOrderId(savedOrder.getId());
         response.setProductName(product.getName());

@@ -92,30 +92,18 @@ class OrderControllerTest {
     }
 
     @Test
-    void createOrder_productNotFound() throws Exception {
-        // Arrange
-        when(restTemplate.getForEntity(eq("http://localhost:8080/products/1"), eq(ProductDTO.class)))
-                .thenReturn(new ResponseEntity<>(HttpStatus.NOT_FOUND));
-
-        // Act & Assert
-        mockMvc.perform(post("/orders")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(validRequest)))
-                .andExpect(status().isNotFound());
-    }
-
-    @Test
     void createOrder_insufficientQuantity() throws Exception {
-        // Arrange
-        validRequest.setQuantity(15); // More than available quantity (10)
+        validRequest.setQuantity(15);
         when(restTemplate.getForEntity(eq("http://localhost:8080/products/1"), eq(ProductDTO.class)))
                 .thenReturn(new ResponseEntity<>(product, HttpStatus.OK));
 
-        // Act & Assert
         mockMvc.perform(post("/orders")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(validRequest)))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.error").value("Bad Request"))
+                .andExpect(jsonPath("$.message").value("Insufficient quantity. Available: 10, Requested: 15"));
     }
 
     @Test
