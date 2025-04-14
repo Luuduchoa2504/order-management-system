@@ -65,16 +65,23 @@
 	<build>
 		<plugins>
 			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-				<configuration>
-					<excludes>
-						<exclude>
-							<groupId>org.projectlombok</groupId>
-							<artifactId>lombok</artifactId>
-						</exclude>
-					</excludes>
-				</configuration>
+				<groupId>org.springdoc</groupId>
+				<artifactId>springdoc-openapi-maven-plugin</artifactId>
+				<version>1.4</version>
+				<executions>
+					<execution>
+						<id>generate-openapi</id>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<phase>integration-test</phase>
+						<configuration>
+							<apiDocsUrl>http://localhost:8083/api-docs</apiDocsUrl>
+							<outputFileName>order-service-api-docs.yaml</outputFileName>
+							<outputDir>${project.build.directory}/openapi</outputDir>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>

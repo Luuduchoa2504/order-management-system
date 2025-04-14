@@ -1,0 +1,48 @@
+openapi: 3.0.1
+info:
+  title: OpenAPI definition
+  version: v0
+servers:
+- description: Generated server url
+  url: http://localhost:8083
+paths:
+  /orders:
+    post:
+      operationId: createOrder
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderRequestDTO'
+        required: true
+      responses:
+        "200":
+          content:
+            '*/*':
+              schema:
+                type: object
+          description: OK
+      tags:
+      - order-controller
+      x-content-type: application/json
+      x-accepts:
+      - '*/*'
+components:
+  schemas:
+    OrderRequestDTO:
+      example:
+        quantity: 1
+        productId: 1
+      properties:
+        productId:
+          format: int64
+          minimum: 1
+          type: integer
+        quantity:
+          format: int32
+          minimum: 1
+          type: integer
+      required:
+      - productId
+      type: object
+
